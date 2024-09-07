@@ -1,4 +1,5 @@
-﻿﻿﻿﻿--Left ,Right, Lenght, Exist, Top,Dense Rank ,Having Count 
+﻿--version control, joins﻿﻿﻿
+--Left ,Right, Lenght, Exist, Top,Dense Rank ,Having Count 
 
 select *
 from World
