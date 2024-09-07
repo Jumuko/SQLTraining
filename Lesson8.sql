@@ -1,4 +1,5 @@
 ﻿--version control, joins﻿﻿﻿
+--Data Migration
 --Left ,Right, Lenght, Exist, Top,Dense Rank ,Having Count 
 
 select *
@@ -104,6 +105,13 @@ where salary=
 		from EmployeeJoin
 )
 
+--another way
+select top 1 *
+from EmployeeJoin
+order by Salary asc
+
+
+
 --5: Write a query that returns the highest salary of employees stored in the employee table.
 select 
 max(salary) as TotalSalary
@@ -117,7 +125,10 @@ where salary=
 		max(salary) as TotalSalary
 		from EmployeeJoin
 )
-
+--another way
+select top 1 *
+from EmployeeJoin
+order by Salary desc
 
 select *
 from emp_address as A,EmployeeJoin as B
@@ -150,3 +161,8 @@ from emp_address as A
 join 
 EmployeeJoin as B
 on A.name=B.name
+
+select * into Prod.dbo.EmployeeJoin
+from SQLTraining.dbo.Employeejoin
+
+create database Prod
