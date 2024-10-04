@@ -1,0 +1,116 @@
+	create table PRSN
+	(PRSN_IK int not null,	NAME varchar(50) not null,	AGE	int not null, MRN_NB int null)
+
+	insert into PRSN
+	values
+	(1,'Bob',35,111),
+	(2,'John',25,222),
+	(3,'Mary',21,333),
+	(4,'Bill',28,444),
+	(5,'Jack',15,null),
+	(6,'Jake',15,666),
+	(7,'Anne',25,777)
+
+	
+
+	create table PRSN_PHN
+	(PRSN_IK int not null, LNE_NB int not null, USG_TYP varchar(50) null, PHONE_NBR varchar(50) not null)
+
+	insert into PRSN_PHN
+	values
+	(1,1,'HOME','915-111-2222'),
+	(2,1,'HOME','415-222-3333'),
+	(2,2,'WORK','510-333-4444'),
+	(4,1,'WORK','650-444-5555'),
+	(4,2,NULL,'925-333-4444'),
+	(5,1,'HOME','509-555-6666'),
+	(5,2,NULL,'510-555-6666')
+
+
+	create table PRSN_ADDR
+	(PRSN_IK int not null, LNE_NB int not null, ADDR_TYP varchar(50) null, ADDR varchar(50) not null)
+
+	insert into PRSN_ADDR
+	values
+	(1,1,'HOME','WALNUT CREEK'),
+	(1,2,'WORK','SAN FRANCISCO'),
+	(2,1,'HOME','OAKLAND'),
+	(3,1,'WORK','DUBLIN'),
+	(3,2,NULL,'SAN JOSE')
+	
+	
+	/**
+	Write a querry that returns all rows from PRSN table with it's corresponding phone number and address or 
+	phone number is not available, display N/A, display a comment depending on whether they have an address, a phone number, or both.
+	**/
+	
+	
+	select *,
+	case
+	when ADDR = 'N/A' and PHONE_NUMBER = 'N/A' then 'MEMBER HAS NONE'
+	when Phone_Number = 'N/A' then 'MEMBER HAS ADDR ONLY'
+	when ADDR = 'N/A' then 'MEMBER HAS PHONE ONLY'
+	else 'MEMBER HAS BOTH'
+	end as COMMENT_TX
+	from
+	 (select Name,MRN_NB,USG_TYP TYPE,coalesce(PHONE_NBR, 'N/A') PHONE_NUMBER,coalesce(ADDR, 'N/A') ADDR
+	 from PRSN A
+	left join PRSN_ADDR B on A.PRSN_IK=B.PRSN_IK
+	left join PRSN_PHN C on A.PRSN_IK=C.PRSN_IK) X
+
+
+	/**
+	Write a querry that return the address and phone number of the oldest person from the PRSN table
+	**/
+	select top 2 NAME,ADDR
+	from PRSN A
+	left join PRSN_ADDR B on A.PRSN_IK=B.PRSN_IK
+	left join PRSN_PHN C on A.PRSN_IK=C.PRSN_IK
+	Order by AGE Desc
+
+	/**
+	Write a querry that return the phone number of the third youngest person(s) from the PRSN table(use 
+	analytic function if possible
+	**/
+	
+	select NAME,USG_TYP,PHONE_NBR
+	from PRSN A
+	left join PRSN_ADDR B on A.PRSN_IK=B.PRSN_IK
+	left join PRSN_PHN C on A.PRSN_IK=C.PRSN_IK
+	where AGE=25
+	
+
+	/**
+	Write a querry that will return all person that has multiple addr or multiple phone number
+	**/
+	
+
+	-- Get persons with multiple addresses
+SELECT 
+    A.PRSN_IK,
+    A.Name,A.AGE,A.MRN_NB,
+    COUNT(B.ADDR) AS AddressCount
+FROM 
+    PRSN A
+left JOIN 
+    PRSN_ADDR B ON A.PRSN_IK = B.PRSN_IK
+GROUP BY 
+    A.PRSN_IK, A.Name, A.AGE,A.MRN_NB
+HAVING 
+    COUNT(B.ADDR) > 1
+
+UNION all
+
+-- Get persons with multiple phone numbers
+SELECT 
+    A.PRSN_IK,
+    A.Name,A.AGE,A.MRN_NB,
+    COUNT(C.PHONE_NBR) AS PhoneCount
+FROM 
+    PRSN A
+left JOIN 
+    PRSN_PHN C ON A.PRSN_IK = C.PRSN_IK
+GROUP BY 
+    A.PRSN_IK,A.Name,A.AGE,A.MRN_NB
+HAVING 
+    COUNT(C.PHONE_NBR) > 1

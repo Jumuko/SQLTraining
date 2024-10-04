@@ -1,0 +1,79 @@
+/**Todays task
+1. Parameterised store procedure, Modify Store procedure
+2. Install ETL tool
+3. Install Business Intelligence tool
+4. how to identify Duplicates/dedup
+5. Indexes
+6. Group by, Distinct, Order by, having, intercept, except, union, unionall
+**/
+
+
+-- how to order or sort using order by
+select *
+from Noble
+order by YEAR desc
+
+exec spNoble 1963
+
+--how to eliminate duplicates
+select distinct * 
+from Noble
+order by YEAR desc
+
+--another way to eliminate duplicates
+select year, subject, winner 
+from Noble
+group by year, subject, winner
+order by YEAR desc
+
+--how to identify duplicates
+select year, subject, winner,
+DuplicateRecords = count (*) 
+from Noble
+group by year, subject, winner
+order by YEAR desc
+
+--how to identify only duplicates
+select year, subject, winner,
+DuplicateRecords = count (*) 
+from Noble
+group by year, subject, winner
+having count (1) > 1
+order by YEAR desc
+
+drop table if exists NobleBkup
+select * 
+into NobleBkup 
+from Noble
+
+--how to apply unionall
+select * 
+from Noble
+union all
+select *
+from NobleBkup
+
+--how to apply union
+select * 
+from Noble
+union
+select *
+from NobleBkup
+
+delete from NobleBkup
+where year > 1960
+
+--how to apply intercept
+select * 
+from Noble
+intersect
+select *
+from NobleBkup
+
+--how to apply except
+select * 
+from Noble
+except
+select *
+from NobleBkup
+

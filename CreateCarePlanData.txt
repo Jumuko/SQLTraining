@@ -1,0 +1,10 @@
+Id varchar(250) null,
+START varchar(250) null,
+STOP varchar(250) null,
+PATIENT varchar(250) null,
+ENCOUNTER varchar(250) null,	
+CODE varchar(250) null,	
+DESCRIPTION varchar(250) null,	
+REASONCODE varchar(250) null,	
+REASONDESCRIPTION varchar(250) null
+ 

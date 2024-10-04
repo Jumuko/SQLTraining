@@ -24,35 +24,33 @@ exec spNoble
 
 exec spFinalExam
 /**
-DDL-Data Definition Language(Create,Truncate,Alter,Drop)
-DML-Data Manipulation Language(Update, Delete, Insert)
-TCL-Transaction Control Language(Commit, Rollback)
-DQL-Data Querry Language(Select)
-DCL-Data Control Language(grant,revoke)
+DDL-Data Definition Language(Create, Truncate)
+DML-Data Manipulation Language(Update, Alter, Delete)
+DCL-Data Control Language(Commit, Rollback)
 
 **/
 
 select *
-from [Results_1]
+from [Results 1]
 where NAME = 'Ivan'
 
 --how to delete record from a table
 begin tran
 delete 
-from [Results_1]
+from [Results 1]
 where NAME = 'Ivan'
 rollback
 
 begin tran
 delete 
-from [Results_1]
+from [Results 1]
 where NAME = 'Simisola'
 commit
 
 --how to create a backup of a table
 drop table if exists ResultBkup
 select * into ResultBkup
-from [Results_1]
+from [Results 1]
 
 select *
 from ResultBkup
@@ -71,11 +69,11 @@ CTE common table expression
 **/
 
 select * into #ResultBkupTemp
-from [Results_1]
+from [Results 1]
 
 
 select * into ##ResultBkupTemp
-from [Results_1]
+from [Results 1]
 
 select * from #ResultBkupTemp
 select * from ##ResultBkupTemp
@@ -84,16 +82,9 @@ select * from ##ResultBkupTemp
 with cte as 
 (
 select *
-from [Results_1]
+from [Results 1]
 )
 select * from cte
-
-with john as 
-(
-		select * 
-		from HrAnalysis1
-)
-select * from john
 
 select @@SERVERNAME
 select * from INFORMATION_SCHEMA.tables
@@ -105,4 +96,3 @@ select * from ##vwGradeBkupTemp
 
 select * 
 from #GamesBkupTemp
-

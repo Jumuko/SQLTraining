@@ -141,7 +141,7 @@ except
 select *
 from NobleBkup
 
---Handling NULLS using case or coarlese
+--Handling NULLS using case or coalesce
 select *,
 case when Subcategory is Null then 0
 end NewSub
@@ -200,6 +200,8 @@ with HRData as
 select * from HRData
 
 /*how to handle duplicates*/
+select *
+from Noble
 
 --how to eliminate duplicates
 select distinct * 
@@ -253,9 +255,22 @@ select*from employeejoin
 
 select*from emp_address
 
-select * from employeejoin A
+--Gap Analysis using exists and metrics
+select 'DEV' as source, * from employeejoin A
 join emp_address B 
 on A.name=B.name
+where not exists
+(select 'Task' as source, * from employeejoin A
+join emp_address B 
+on A.name=B.name)
+
+select 'Prod' as source, 
+sum(salary) TotalSalary
+from EmployeeJoin
+union
+select 'DEV' as source,
+sum(salary) TotalSalary
+from EmployeeJoin
 
 select A.occupation, A.working_date, A.working_hours,B.cellphone,B.address,B.city,
 sum(working_hours*Salary) stipend
@@ -263,3 +278,201 @@ from employeejoin A
 join emp_address B 
 on A.name=B.name
 group by A.occupation, A.working_date, A.working_hours,B.cellphone,B.address,B.city
+
+--find Total no. of Hypertensive disorder in DEV and TEST environment.
+select 'DEV'source, 
+count(DESCRIPTION) TotalHypertensionDisorder 
+from dev.dbo.CarePlansData
+where  DESCRIPTION like '%hypertension%'
+union 
+select 'TEST' source, 
+count(DESCRIPTION) TotalHypertensionDisorder 
+from dev.dbo.CarePlansData
+where  DESCRIPTION like '%hypertension%'
+
+--Changed data type using convert
+select *,
+convert(varchar(10), START, 10) NewStart,
+convert(varchar(10), STOP, 10) NewStop
+from CarePlansData
+
+alter table careplans
+alter column START date 
+
+alter table careplans
+alter column STOP date 
+
+--Selected specified information from 2 tables
+select *
+from ClaimsTransactionData A
+join ClaimsData B on A.PATIENTID=B.PATIENTID
+where Amount in ('85.55','136.00')
+and DIAGNOSISREF3 = 3
+
+--used cte
+with Plans as 
+(
+select A.Id,A.CODE,B.PATIENT,B.ENCOUNTER
+from careplans A,ConditionsData B
+where A.PATIENT=B.PATIENT
+)
+select *
+from Plans
+
+select *
+from ClaimsData A
+join ClaimsTransactionData B on A.Id=B.CLAIMID
+
+use Dev
+go
+;
+
+alter table ClaimsTransactionData
+alter column CLAIMID varchar(200) not null 
+
+alter table ClaimsData
+alter column ID varchar(200) not null 
+
+--Create a query listing out for each continent and country the number of events taking place therein:
+use WorldEvent
+go
+;
+
+select A.ContinentName,B.CountryName,
+count(EventID) NumberOfEvents
+from tblContinent A
+join tblCountry B on A.ContinentID=B.ContinentID
+join tblEvent C on C.CountryID=B.CountryID
+group by A.ContinentName,B.CountryName
+order by B.CountryName Asc
+
+--Now change your query so that it omits events taking place in the continent of Europe:
+select A.ContinentName,B.CountryName,
+count(EventID) NumberOfEvents
+from tblContinent A
+join tblCountry B on A.ContinentID=B.ContinentID
+join tblEvent C on C.CountryID=B.CountryID
+where ContinentName <> 'Europe'
+group by A.ContinentName,B.CountryName
+order by B.CountryName Asc
+
+--Finally, change your query so that it only shows countries having 5 or more events:
+select A.ContinentName,B.CountryName,
+count(EventID) NumberOfEvents
+from tblContinent A
+join tblCountry B on A.ContinentID=B.ContinentID
+join tblEvent C on C.CountryID=B.CountryID
+where ContinentName <> 'Europe'
+group by A.ContinentName,B.CountryName
+having count(EventID) > 5
+order by B.CountryName Asc
+
+use Music_01
+go
+;
+
+select *
+from Track
+
+--Unfortunately, the track names aren't sorted properly because some have leading spaces and double-quotes. 
+--Create a function which will accept the name of a track and return a cleaned version of it by doing the following:
+--Use the TRIM function to remove leading and trailing spaces.
+--Use the REPLACE function to replace double-quote characters with empty strings.
+--Use your new function in the query to show a sorted list of cleaned track names, ALbum_name,Track_mins,Track_secs
+
+select B.Title Album_Name,A.Track_mins,A.Track_secs,
+trim(replace(Track_name,'"','')) Clean_Track_Name
+from Track A
+join Album B on B.Album_ID=A.Album_ID
+order by Clean_Track_Name
+
+--Create a new function which you can call in a query as shown below: dbo.fn.Track_time(t.Track_mins, T.Track_secs) as Track_Length
+select B.Title Album_Name,A.Track_mins,A.Track_secs,
+trim(replace(Track_name,'"','')) Clean_Track_Name,
+concat(format(Track_mins, '00'), ':', format(Track_secs, '00')) Track_Length
+from Track A
+join Album B on B.Album_ID=A.Album_ID
+order by Clean_Track_Name
+
+--Write a query using the Venue and Show tables to display the aggregations shown below for each venue: Venue,Count_0f_shows,Sum_tickets_sold,avg_revenue_$
+
+select Venue,
+count(show_ID) Count_of_shows,
+sum(Tickets_sold) Sum_tickets_sold,
+avg(revenue_$) avg_revenue_$
+from Venue A
+join Show B on B.Venue_ID=A.Venue_ID
+group by Venue
+order by Count_of_shows desc
+
+--Make another version of the same query which shows the same statistics for different cities.
+select City,
+count(show_ID) Count_of_shows,
+sum(Tickets_sold) Sum_tickets_sold,
+avg(revenue_$) avg_revenue_$
+from Venue A
+join Show B on B.Venue_ID=A.Venue_ID
+join City C on C.City_ID=A.City_ID
+group by City
+order by Count_of_shows desc
+
+--Make another version of the same query which groups the data by Country
+select Country,
+count(show_ID) Count_of_shows,
+sum(Tickets_sold) Sum_tickets_sold,
+avg(revenue_$) avg_revenue_$
+from Venue A
+join Show B on B.Venue_ID=A.Venue_ID
+join City C on C.City_ID=A.City_ID
+join Country D on D.Country_ID=C.Country_ID
+group by Country
+order by Count_of_shows desc
+
+--Make another version of the query which groups the data by Continent.
+select Continent,
+count(show_ID) Count_of_shows,
+sum(Tickets_sold) Sum_tickets_sold,
+avg(revenue_$) avg_revenue_$
+from Venue A
+join Show B on B.Venue_ID=A.Venue_ID
+join City C on C.City_ID=A.City_ID
+join Country D on D.Country_ID=C.Country_ID
+join Continent E on E.Continent_ID=D.Continent_ID
+group by Continent
+order by Count_of_shows desc
+
+--Create a version of the previous query which groups the data by each of the previous group fields
+select Continent,Country,City,Venue,
+count(show_ID) Count_of_shows,
+sum(Tickets_sold) Sum_tickets_sold,
+avg(revenue_$) avg_revenue_$
+from Venue A
+join Show B on B.Venue_ID=A.Venue_ID
+join City C on C.City_ID=A.City_ID
+join Country D on D.Country_ID=C.Country_ID
+join Continent E on E.Continent_ID=D.Continent_ID
+group by Continent,Country,City,Venue
+order by Count_of_shows desc
+
+--Create a query which shows two statistics for each category initial:
+--The number of events for categories beginning with this letter; and
+--The average length in characters of the event name for categories beginning with this letter
+
+
+		
+		select EventName,EventDetails,
+		count(CategoryName) NumberOfEvents,
+		substring(CategoryName, 1,1) as FirstLetter
+		from tblCategory A
+		join tblEvent B on B.CategoryID=A.CategoryID
+		group by EventName,EventDetails
+
+			select distinct count(CategoryName) NumberOfEvents,
+			len(EventName) avgEventNameLength,
+		substring(CategoryName, 1,1) as CategoryInitial
+		from tblCategory A
+		join tblEvent B on B.CategoryID=A.CategoryID
+		group by CategoryName,EventName
+		Order by CategoryInitial asc
+		
+	

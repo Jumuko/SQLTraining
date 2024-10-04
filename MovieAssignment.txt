@@ -1,0 +1,71 @@
+drop table if exists Movies
+create table Movies
+(No int not null,
+Name varchar (50) null,
+Type varchar (50) null,
+Rating varchar (5) null,
+Stars varchar (50) null,
+Qty int not null, 
+Price dec(10, 2) not null)
+
+insert into Movies
+(No,Name,Type,Rating,Stars,Qty,Price)
+values
+(1,'Gone With Wind','Drama','G','Gable',4,39.95),
+(2,'Friday the 13th','Horror','R','Jason',2,60.95),
+(3,'Top Gun','Drama','PG','Cruise',7,49.95),
+(4,'Splash','Comedy','PG13','Hanks',3,29.95),
+(5,'Independent Day','Drama','R','Turner',3,19.95),
+(6,'Risk Business','Comedy','R','Cruise',2,44.95),
+(7,'Cocoon','Sci-fi','PG','Ameche',2,31.95),
+(8,'Crocodile','Comedy','PG13','Harris',2,69.95),
+(9,'101 Dalmatians','Comedy','G','Hoffman',3,59.95),
+(10,'Tootsie','Comedy','PG','Croft',1,29.95)
+
+select *
+from Movies
+
+--Find the total number of records available in the type which is Drama
+select type,
+TotalNoOfRecord = count(*)
+from Movies
+where type = 'Drama'
+group by type
+
+--Display a list of all movies with price over 20 and sorted by price
+select Name,Price
+from Movies
+where price > 20
+order by Price
+
+--Display all the movies sorted by QTY in decreasing order
+select Name,QTY
+from Movies
+order by QTY
+desc
+
+--Display a report listing total by movie type, current value, and replacement value for each movie type. 
+--Calculate the replacement value for all movies as QTY*Price*1.15
+select Type,
+    count(*) as TotalMovies,
+    sum(Qty * Price) as CurrentValue,
+    sum(Qty * Price * 1.15) as ReplacementValue
+from Movies
+group by Type
+Order by Type 
+
+--Count the number of movies where rating is not "G". 
+select Rating,
+count(*) as NumberOfMovies
+from Movies
+where Rating <> 'G'
+Group by Rating
+
+--Insert a new movie in the table and make it Name:Nollywood, Type should be SuperStory, Ratings as R, Stars as Regina, Qty as 10 in Movie table were price > 30
+insert into Movies
+(No,Name,Type,Rating,Stars,Qty,Price)
+values
+(11,'Nollywood','SuperStory','R','Regina',10,35)
+
+select *
+from Movies
