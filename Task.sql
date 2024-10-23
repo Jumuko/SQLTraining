@@ -8,13 +8,14 @@ Except/ Intercept/ Union/Union All
 How to find duplicate record
 	13.	???Data Migration i.e create Dev, Test, Prod
 	5. ERD(Entity relationship diagram)
+	Dense Rank, dates, partition
 WIP
 	1.	SQL joins
 	2.	??How to delete duplicate record
 	3.	???Learning more about Join
 	4.	??Dax expressions in Power BI
 	5. Indexes
-	6.	, Dense Rank ,,lag,lead -
+	6.	,  ,,lag,lead -
 	7.	Data Modeling
 	8.	??Variables in SQL
 	9.	??Window Fxn

@@ -11,7 +11,14 @@
 	(6,'Jake',15,666),
 	(7,'Anne',25,777)
 
-	
+	select *
+	from PRSN
+
+		select *
+	from PRSN_PHN
+
+		select *
+	from PRSN_ADDR
 
 	create table PRSN_PHN
 	(PRSN_IK int not null, LNE_NB int not null, USG_TYP varchar(50) null, PHONE_NBR varchar(50) not null)
@@ -78,6 +85,12 @@
 	left join PRSN_ADDR B on A.PRSN_IK=B.PRSN_IK
 	left join PRSN_PHN C on A.PRSN_IK=C.PRSN_IK
 	where AGE=25
+
+	select top 3 NAME,ADDR
+	from PRSN A
+	left join PRSN_ADDR B on A.PRSN_IK=B.PRSN_IK
+	left join PRSN_PHN C on A.PRSN_IK=C.PRSN_IK
+	Order by AGE Asc
 	
 
 	/**

@@ -38,3 +38,117 @@ SELECT
     LEFT JOIN PRSN_ADDR AS C
     ON C.PRSN_IK = A.PRSN_IK 
 
+	 SELECT
+        A.NAME, 
+		B.USG_TYP, 
+		B.PHONE_NBR,
+		A.AGE
+	FROM   PRSN AS A
+    LEFT JOIN PRSN_PHN AS B
+    ON A.PRSN_IK = B.PRSN_IK
+    LEFT JOIN PRSN_ADDR AS C
+    ON C.PRSN_IK = A.PRSN_IK 
+
+
+--JOINS:LEFT,RIGHT,INNER,FULL
+Messages addressed to "meeting group chat" will also appear in the meeting group chat in Team Chat
+
+Emmanuel Olaiya 10:58 PM
+--JOINS in SQL
+
+--JOIN in sql simply mean bringing data from Table A and Table B. For example BEST_CUSTOMERS Table and Orders table.
+
+--TABLE A BEST_CUSTOMERS TABLE
+
+--1:Creating an BEST_CUSTOMERS  table
+CREATE TABLE BEST_BUY_CUSTOMERS
+( 
+  CUSTOMER_ID INT NOT NULL,
+ FIRST_NAME VARCHAR(50) NULL,
+ LAST_NAME VARCHAR(50) NULL,
+ AGE INT NOT NULL,
+COUNTRY VARCHAR(50) NULL
+);
+
+--2:LOAD DATA TO THE BEST_BUY_CUSTOMERS TABLE
+INSERT INTO BEST_BUY_CUSTOMERS
+(CUSTOMER_ID, FIRST_NAME, LAST_NAME, AGE, COUNTRY)
+VALUES (1, 'John', 'Doe', 31, 'USA'),
+(2, 'Robert', 'Luna', 22, 'USA'),
+(3, 'David', 'Robinson', 22, 'UK'),
+(4, 'John', 'Reinhardt', 25, 'UK'),
+(5, 'Betty', 'Doe', 28, 'UAE')
+
+--2:Creating an ORDER table
+
+CREATE TABLE BEST_BUY_ORDERS
+(
+   ORDER_ID INT NOT NULL,
+   ITEM VARCHAR(50) NULL,
+   AMOUNT MONEY,
+   CUSTOMER_ID INT NOT NULL
+);
+
+--2:LOAD DATA TO THE ( 1, 'Keyboard', 400,4), TABLE
+INSERT INTO BEST_BUY_ORDERS
+(ORDER_ID, ITEM, AMOUNT, CUSTOMER_ID)
+VALUES ( 1, 'Keyboard', 400,4),
+( 2, 'Mouse', 300,4),
+( 3, 'Monitor', 12000,3),
+( 4, 'Keyboard', 400,1),
+( 5, 'Mousepad', 250,2)
+
+
+--2:Creating an BEST_BUY_PRODUCTS table
+
+CREATE TABLE BEST_BUY_PRODUCTS
+(
+   PRODUCT_ID INT NOT NULL,
+   PRODUCT_NUMBER VARCHAR(50) NULL,
+   AMOUNT MONEY,
+   CUSTOMER_ID INT NOT NULL
+);
+
+--2:LOAD DATA TO THE ( 1, 'Keyboard', 400,4), TABLE
+INSERT INTO BEST_BUY_PRODUCTS
+(PRODUCT_ID, PRODUCT_NUMBER, AMOUNT, CUSTOMER_ID)
+VALUES ( 1, 'Keyboard', 400,5),
+( 2, 'Headphone', 300,4),
+( 3, 'Laptop', 12000,3),
+( 4, 'Pen', 400,1),
+( 5, 'Mousepad', 250,2)
+--EXAMPLE OF INNER JOIN 
+--A = 1,2,3,4,5
+--B = 4,5
+--EXAMPLE OF RIGHT JOIN 
+--A = 1,2,3,4,5
+--B = 4,5, 6,7,8
+--EXAMPLE OF LEFT JOIN 
+--A = 1,2,3,4,5
+--B = 4,5, 9, 10, 11
+
+
+
+SELECT *
+FROM BEST_BUY_ORDERS
+SELECT*
+FROM BEST_BUY_PRODUCTS
+SELECT *
+FROM BEST_BUY_CUSTOMERS
+
+--Write a query that shows customer who bought item Mouse
+SELECT DISTINCT A.FIRST_NAME,A.LAST_NAME,B.ITEM
+FROM BEST_BUY_CUSTOMERS A
+	JOIN BEST_BUY_ORDERS B
+	ON A.CUSTOMER_ID=B.CUSTOMER_ID
+	WHERE ITEM='MOUSE'
+
+--Show me the customer info and the item that they order, the product but only show the product for pen
+SELECT DISTINCT A.FIRST_NAME,A.LAST_NAME,B.ITEM,C.PRODUCT_NUMBER PRODUCT
+FROM BEST_BUY_CUSTOMERS A
+	JOIN BEST_BUY_ORDERS B
+	ON A.CUSTOMER_ID=B.CUSTOMER_ID
+	JOIN BEST_BUY_PRODUCTS C
+	ON B.CUSTOMER_ID=C.CUSTOMER_ID
+	WHERE PRODUCT_NUMBER='PEN'
+
