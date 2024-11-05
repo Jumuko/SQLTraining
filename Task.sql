@@ -9,6 +9,7 @@ How to find duplicate record
 	13.	???Data Migration i.e create Dev, Test, Prod
 	5. ERD(Entity relationship diagram)
 	Dense Rank, dates, partition
+	Merge,Append
 WIP
 	1.	SQL joins
 	2.	??How to delete duplicate record

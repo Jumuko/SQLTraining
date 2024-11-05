@@ -17,7 +17,7 @@ select
   alter table Employees
   add Continent varchar(50) null
   ;
-
+ 
   update Employees
   set Continent =
 		
@@ -160,15 +160,15 @@ from WalmartData
 
 select [index], [SHIPPING_LOCATION], [DEPARTMENT], [CATEGORY], coalesce(SUBCATEGORY, 'N/A') NewSub, [BREADCRUMBS], [SKU], [PRODUCT_URL], [PRODUCT_NAME], [BRAND], [PRICE_RETAIL], [PRICE_CURRENT], [PRODUCT_SIZE], [PROMOTION], [RunDate], [tid]
 from WalmartData
-
+;
 --creating views
-
+drop view vwRAYstring if exists
 create view
 vwRAYstring as
 select *
 from EmployeeJoin
 where Name like '%ray%'
-
+;
 drop view if exists vw;
 create view
 vw as
@@ -333,10 +333,108 @@ alter column CLAIMID varchar(200) not null
 alter table ClaimsData
 alter column ID varchar(200) not null 
 
+
+ --create table and bulk insert
+create table stg_CarePlans
+(
+Id varchar (200) null, 
+[START] varchar (100)null, 
+[STOP] Varchar (100)null, 
+PATIENT varchar (200) null,
+ENCOUNTER varchar (200) null,
+CODE varchar (200) null,
+[DESCRIPTION] varchar (200) null, 
+REASONCODE varchar (200) null,
+REASONDESCRIPTION varchar(500) null
+)
+ --bulk insert
+ bulk insert stg_CarePlans
+ from 'C:\Users\John\OneDrive\Documents\ETL Training\Inbound\Hospital Patient Project\careplans.csv'
+with
+(format='csv', firstrow = 2,
+fieldterminator=',',
+rowterminator='0x0a'
+)
+Drop Table if exists HospitalFacilityListing
+create table HospitalFacilityListing
+(
+LICENSED_CERTIFIED varchar(250) null,
+FLAG varchar(250) null,
+T18_19 varchar(250) null,	
+FACID int not null,
+FAC_STATUS_TYPE_CODE varchar(250) null,	
+ASPEN_FACID varchar(250) null,
+CCN varchar(250) null,
+TERMINAT_SW varchar(250) null,	
+PARTICIPATION_DATE date,	
+APPROVAL_DATE date,
+NPI varchar(250) null,
+CAN_BE_DEEMED_FAC_TYPE varchar(250) null,	
+CAN_BE_CERTIFIED_FAC_TYPE varchar(250) null,	
+DEEMED varchar(250) null,
+AO_CD varchar(250) null,
+DMG_EFCTV_DT varchar(250) null,	
+AO_TRMNTN_DT varchar(250) null,	
+AO_NAME	varchar(250) null,
+FACNAME varchar(250) null,	
+FAC_TYPE_CODE varchar(250) null,	
+FAC_FDR varchar(250) null,
+LTC varchar(250) null,
+CAPACITY int,	
+ADDRESS varchar(250) null,
+CITY varchar(250) null,	
+ZIP varchar(250) null,	
+ZIP9 varchar(250) null,	
+FACADMIN varchar(250) null,	
+CONTACT_EMAIL varchar(250) null,
+CONTACT_FAX varchar(250) null,
+CONTACT_PHONE_NUMBER varchar(250) null,	
+COUNTY_CODE varchar(250) null,
+COUNTY_NAME varchar(250) null,
+DISTRICT_NUMBER varchar(250) null,	
+DISTRICT_NAME varchar(250) null,
+ISFACMAIN varchar(250) null,
+PARENT_FACID varchar(250) null,	
+FAC_FAC_RELATIONSHIP_TYPE_CODE varchar(250) null,	
+START_DATE date,
+LICENSE_NUMBER varchar(250) null,	
+BUSINESS_NAME varchar(250) null,
+LICENSE_STATUS_DESCRIPTION varchar(250) null,	
+INITIAL_LICENSE_DATE date,
+LICENSE_EFFECTIVE_DATE date,	
+LICENSE_EXPIRATION_DATE date,	
+ENTITY_TYPE_DESCRIPTION varchar(250) null,
+LATITUDE varchar(250) null,
+LONGITUDE varchar(250) null,	
+LOCATION varchar(250) null,	
+HCAI_ID varchar(250) null,
+CCLHO_CODE varchar(250) null,	
+CCLHO_NAME varchar(250) null,	
+FIPS_COUNTY_CODE varchar(250) null,	
+BIRTHING_FACILITY_FLAG varchar(250) null,	
+TRAUMA_PED_CTR varchar(250) null,	
+TRAUMA_CTR varchar(250) null,
+TYPE_OF_CARE varchar(250) null,	
+CRITICAL_ACCESS_HOSPITAL varchar(250) null,	
+DATA_DATE date,
+DMG_EFCTV_DATE date
+)
+
+
+ bulk insert HospitalFacilityListing
+ from 'C:\Users\John\OneDrive\Documents\ETL Training\Inbound\Hospital Facility Project\health_facility_locations.csv'
+with
+(format='csv', firstrow = 2,
+fieldterminator=',',
+rowterminator='0x0a'
+)
+
 --Create a query listing out for each continent and country the number of events taking place therein:
 use WorldEvent
 go
 ;
+
+
 
 select A.ContinentName,B.CountryName,
 count(EventID) NumberOfEvents
@@ -474,5 +572,152 @@ order by Count_of_shows desc
 		join tblEvent B on B.CategoryID=A.CategoryID
 		group by CategoryName,EventName
 		Order by CategoryInitial asc
-		
-	
+		;
+--To find only even numbers	
+select *
+from hranalysis1
+where Age % 2 = 0
+
+--To find only odd numbers	
+select *
+from hranalysis1
+where Age % 2 = 1
+;
+
+--[Music_01 DB]find the difference between the total number of CITY entries in the table and the 
+--number of distinct CITY entries in the table
+
+select 
+count(city) - 
+count(distinct city) NumberOfDistinctCity
+from City
+;
+
+select *
+from employee
+
+--Querry the 2 EmployeeFirstNames with the longest and shortest length and thier lenght(no of character)
+
+select top 1
+len(EmployeeFirstName) lenght,EmployeeFirstName
+from Employee
+Order by EmployeeFirstName asc
+
+
+select top 1
+len(EmployeeFirstName) lenght,EmployeeFirstName
+from Employee
+Order by EmployeeFirstName desc
+
+
+with X as 
+(
+select *,
+len(EmployeeFirstName) lenght
+from Employee
+--Order by len(EmployeeFirstName) asc
+)
+select top 1 Lenght,EmployeeFirstName
+from X
+where exists(
+select
+max(lenght) max,
+min(lenght) min
+from X)
+Order by Lenght asc
+
+
+with X as 
+(
+select 
+max(len(EmployeeFirstName)) maxlenght,
+min(len(EmployeeFirstName)) minlenght,
+from Employee
+--Order by len(EmployeeFirstName) asc
+)
+select Lenght,EmployeeFirstName
+from X
+where exists(
+select
+max(lenght) max,
+min(lenght) min
+from X)
+
+
+SELECT TOP 1
+    LEN(EmployeeFirstName) AS Length,
+    EmployeeFirstName
+FROM 
+    Employee
+ORDER BY 
+    LEN(EmployeeFirstName) ASC
+
+UNION ALL
+
+SELECT TOP 1
+    LEN(EmployeeFirstName) AS Length,
+    EmployeeFirstName
+FROM 
+    Employee
+ORDER BY 
+    LEN(EmployeeFirstName) DESC;
+
+WITH RankedEmployees AS (
+    SELECT 
+        EmployeeFirstName,
+        LEN(EmployeeFirstName) AS Length,
+        ROW_NUMBER() OVER (ORDER BY LEN(EmployeeFirstName) ASC) AS ShortestRank,
+        ROW_NUMBER() OVER (ORDER BY LEN(EmployeeFirstName) DESC) AS LongestRank
+    FROM 
+        Employee
+)
+SELECT 
+    EmployeeFirstName,
+    Length
+FROM 
+    RankedEmployees
+WHERE 
+    ShortestRank = 1 OR LongestRank = 1
+
+select top 1
+len(EmployeeFirstName) lenght,EmployeeFirstName
+from Employee
+where len(EmployeeFirstName) =
+(select 
+max(len(employeeFirstName)) maxlenght
+from Employee)
+Order by EmployeeFirstName asc
+
+
+select top 1
+len(EmployeeFirstName) lenght,EmployeeFirstName
+from Employee
+Order by EmployeeFirstName desc
+
+select 
+max(len(employeeFirstName)) maxlenght
+from Employee
+
+select 
+min(len(employeeFirstName)) minlenght
+from Employee
+
+select *
+from emadeconsulting
+
+select *
+from HospitalFacilityListingData
+
+--USING PIVOT: ITS USED TO CONVERT ROWS TO COLUMN
+SELECT *
+FROM
+	(
+	SELECT YEAR,SUBJECT,WINNER,
+	COUNT(YEAR) YEARS
+	FROM NOBLE
+	GROUP BY YEAR,SUBJECT,WINNER
+	) SOURCETABLE
+
+PIVOT(SUM([YEARS])
+FOR YEAR IN ([1960],[1961],[1962],[1963])
+	) YEARPIVOT

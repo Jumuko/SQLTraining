@@ -42,11 +42,12 @@ WITH VISITS AS
 		B.CITY,
 		A.PATIENT,
 		B.ID,
+		B.FIRST,
 		COUNT(B.ID) AS NUMBEROFVISITS
 	FROM ENCOUNTERSDATA A
 		JOIN PATIENTSDATA B 
 		ON A.PATIENT=B.ID
-	GROUP BY B.CITY,A.PATIENT,B.ID
+	GROUP BY B.CITY,A.PATIENT,B.ID,B.FIRST
 		)
 
 SELECT *
@@ -59,21 +60,26 @@ WHERE NUMBEROFVISITS =
 	);
 --save into view
 create view 
-vwMostVisitPatient as
+vwMostVisitPatient1 as
 	WITH VISITS AS
 		(
 	SELECT DISTINCT 
 		B.CITY,
-		A.PATIENT,
+		B.FIRST,
+		B.LAST,
 		B.ID,
-		COUNT(B.ID) AS NUMBEROFVISITS
+		A.PATIENT,
+		COUNT(B.ID) AS NUMBEROFVISITS,
+		substring(B.last, 1,1) LASTINITIAL
 	FROM ENCOUNTERSDATA A
 		JOIN PATIENTSDATA B 
 		ON A.PATIENT=B.ID
-	GROUP BY B.CITY,A.PATIENT,B.ID
+	GROUP BY B.CITY,B.FIRST,B.LAST,B.ID,A.PATIENT
 		)
 
-SELECT *
+SELECT FIRST,
+LASTINITIAL,
+NUMBEROFVISITS
 FROM VISITS
 WHERE NUMBEROFVISITS =
 	(
@@ -459,3 +465,15 @@ from MedicationsData
 --QUESTION 6: ⁠Now to find out the number of patients from Boston who came in 2020
 --Number of patient encounters by type (e.g., inpatient, outpatient, emergency).
 --Trends over time for each encounter type (daily, weekly, monthly)
+
+--QUESTION 1: Lists out number of patients in descending order,Does not include city Quincy,
+--			  Must have at least 2 patients from that city
+
+select distinct CITY,
+count(ID) as NumberOfPatients
+from PatientsData
+where City<>'Quincy'
+group by CITY
+having count(ID) > 1
+order by NumberOfPatients desc
+
