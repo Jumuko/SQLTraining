@@ -28,10 +28,17 @@ values
 (1962, 'Medicine', 'Sir Frank Macfariane Burnet'),
 (1963, 'Medicine', 'Peter Madawar')
 
+insert into Noble
+values 
+(1964, 'Biology','John-Umukoro')
+
 -- show the year 1962
 select *
 from Noble
-where "year" != 1962
+where "year" = 1962
+
+create view vwNoble 
+
 
 select *
 from Noble
@@ -72,6 +79,19 @@ create view vwOldNoble as
 select *
 from Noble
 where year < 1962 
+
+drop procedure if exists spNoble
+create procedure spNoble 
+@year int , @subject varchar(50) as
+begin
+select *
+from Noble
+where @year=year
+and @subject=subject
+end
+
+exec spNoble @year=1960,@subject='chemistry'
+
 ;
 select *
 from vwOldNoble

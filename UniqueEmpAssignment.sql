@@ -32,6 +32,10 @@ select distinct EmpName
 from UniqueEmployeeInfo
 group by EmpName
 
+select * into BkupUniqueEmployeeInfo
+from UniqueEmployeeInfo
+
+
 select distinct EmpName,EmpID,EmpSalary
 from BkupUniqueEmployeeInfo
 Order by EmpName,EmpID,EmpSalary

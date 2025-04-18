@@ -56,3 +56,21 @@ END
 EXEC spEmadeConsultingDepartment @DeptID=30, @Name='Research'
 
 
+create procedure sp_Emade_SCD_Employee as
+begin 
+select *
+from Emade_SCD_Employee
+end
+;
+
+exec sp_Emade_SCD_Employee
+
+drop procedure if exists sp_Emade_SCD_Employee
+create procedure sp_Emade_SCD_Employee 
+@salary int
+as
+begin 
+select *
+from Emade_SCD_Employee
+where @salary=salary
+end;

@@ -10,6 +10,8 @@ DESCRIPTION: THIS CODE PROVIDES INFORMATION ABOUT PATIENT ENCOUNTERS IN THE HOSP
 
 --QUESTION 1: Write a query that does the following: Lists out number of patients in descending order,Does not include city Quincy,
 --			  Must have at least 2 patients from that city
+select *
+from Hospitalfacilitylisting
 
 SELECT DISTINCT 
 	CITY, 
