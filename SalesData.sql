@@ -80,3 +80,5 @@ Percentage Profit = 100.0 * Total Amt Sold / Total Procurement Cost - 100.0
  from selling price? Take only 'buy' order types
 
  */
+
+ select * from SalesProducts

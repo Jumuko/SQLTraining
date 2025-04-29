@@ -1,205 +1,226 @@
+/**********************************************************************************************************************
+DEVELOPER: JOHN O. UMUKORO, ARAMIDE AGBOOLA
+DATE CREATED: 2025-04-14
+CODE VERSION: 1.0
+DESCRIPTION: THIS CODE PROVIDES INFORMATION ABOUT HEALTH INSURANCE CLAIMS
+PROJECT SCOPE:  1: NORMALIZE AND LOAD ALL 7 HEATLH INSURANCE CLAIMS SYSTEM DATA INTO DATABASE
+				2: CREATE AND DESIGN ERD
+				3: CREATE SQL QUERIES TO GENERATE METRICS
+				4: PRODUCE A BUSINESS INTELLIGENCE REPORT
+**********************************************************************************************************************/
 
 
-select * from SalesCustomers
+SELECT * FROM SALESCUSTOMERS
 
-truncate table HealthInsuranceClaim
-truncate table HealthInsuranceClaimAddress
-truncate table HealthInsuranceClaimPayment
-truncate table HealthInsuranceCoverage
-truncate table HealthInsuranceMembers
-truncate table HealthInsuranceProvider
-truncate table HealthInsuranceStatus
+TRUNCATE TABLE HEALTHINSURANCECLAIM
+TRUNCATE TABLE HEALTHINSURANCECLAIMADDRESS
+TRUNCATE TABLE HEALTHINSURANCECLAIMPAYMENT
+TRUNCATE TABLE HEALTHINSURANCECOVERAGE
+TRUNCATE TABLE HEALTHINSURANCEMEMBERS
+TRUNCATE TABLE HEALTHINSURANCEPROVIDER
+TRUNCATE TABLE HEALTHINSURANCESTATUS
 
-select * from HealthInsuranceClaim
-select * from HealthInsuranceClaimAddress
-select * from HealthInsuranceClaimPayment
-select * from HealthInsuranceCoverage
-select * from HealthInsuranceMembers
-select * from HealthInsuranceProvider
-select * from HealthInsuranceStatus
-
-
-SELECT member_id, member_dob
-FROM HealthInsuranceMembers
-
-select distinct coverage_name, count(member_id) as Members from HealthInsuranceCoverage group by coverage_name
+SELECT * FROM HEALTHINSURANCECLAIM
+SELECT * FROM HEALTHINSURANCECLAIMADDRESS
+SELECT * FROM HEALTHINSURANCECLAIMPAYMENT
+SELECT * FROM HEALTHINSURANCECOVERAGE
+SELECT * FROM HEALTHINSURANCEMEMBERS
+SELECT * FROM HEALTHINSURANCEPROVIDER
+SELECT * FROM HEALTHINSURANCESTATUS
 
 
-drop table if exists HealthInsuranceClaim
-drop table if exists HealthInsuranceClaimAddress
-drop table if exists HealthInsuranceClaimPayment
-drop table if exists HealthInsuranceProvider
-drop table if exists HealthInsuranceMembers
-drop table if exists HealthInsuranceStatus
-drop table if exists HealthInsuranceCoverage
+SELECT MEMBER_ID, MEMBER_DOB
+FROM HEALTHINSURANCEMEMBERS
 
---Number of claims by age group
-create view vwClaimsByAgeGroup as
+SELECT DISTINCT COVERAGE_NAME, COUNT(MEMBER_ID) AS MEMBERS FROM HEALTHINSURANCECOVERAGE GROUP BY COVERAGE_NAME
+
+
+DROP TABLE IF EXISTS HEALTHINSURANCECLAIM
+DROP TABLE IF EXISTS HEALTHINSURANCECLAIMADDRESS
+DROP TABLE IF EXISTS HEALTHINSURANCECLAIMPAYMENT
+DROP TABLE IF EXISTS HEALTHINSURANCEPROVIDER
+DROP TABLE IF EXISTS HEALTHINSURANCEMEMBERS
+DROP TABLE IF EXISTS HEALTHINSURANCESTATUS
+DROP TABLE IF EXISTS HEALTHINSURANCECOVERAGE
+
+--NUMBER OF CLAIMS BY AGE GROUP
+CREATE VIEW VWCLAIMSBYAGEGROUP AS
 SELECT
     CASE 
-        WHEN DATEDIFF(YEAR, member_dob, GETDATE()) < 18 THEN '0-17'
-        WHEN DATEDIFF(YEAR, member_dob, GETDATE()) BETWEEN 18 AND 34 THEN '18-34'
-        WHEN DATEDIFF(YEAR, member_dob, GETDATE()) BETWEEN 35 AND 49 THEN '35-49'
-        WHEN DATEDIFF(YEAR, member_dob, GETDATE()) BETWEEN 50 AND 64 THEN '50-64'
+        WHEN DATEDIFF(YEAR, MEMBER_DOB, GETDATE()) < 18 THEN '0-17'
+        WHEN DATEDIFF(YEAR, MEMBER_DOB, GETDATE()) BETWEEN 18 AND 34 THEN '18-34'
+        WHEN DATEDIFF(YEAR, MEMBER_DOB, GETDATE()) BETWEEN 35 AND 49 THEN '35-49'
+        WHEN DATEDIFF(YEAR, MEMBER_DOB, GETDATE()) BETWEEN 50 AND 64 THEN '50-64'
         ELSE '65+'
-    END AS age_group,
-    COUNT(*) AS Claims
+    END AS AGE_GROUP,
+    COUNT(*) AS CLAIMS
 FROM
-    HealthInsuranceMembers
+    HEALTHINSURANCEMEMBERS
 WHERE
-    member_dob IS NOT NULL
+    MEMBER_DOB IS NOT NULL
 GROUP BY
     CASE 
-        WHEN DATEDIFF(YEAR, member_dob, GETDATE()) < 18 THEN '0-17'
-        WHEN DATEDIFF(YEAR, member_dob, GETDATE()) BETWEEN 18 AND 34 THEN '18-34'
-        WHEN DATEDIFF(YEAR, member_dob, GETDATE()) BETWEEN 35 AND 49 THEN '35-49'
-        WHEN DATEDIFF(YEAR, member_dob, GETDATE()) BETWEEN 50 AND 64 THEN '50-64'
+        WHEN DATEDIFF(YEAR, MEMBER_DOB, GETDATE()) < 18 THEN '0-17'
+        WHEN DATEDIFF(YEAR, MEMBER_DOB, GETDATE()) BETWEEN 18 AND 34 THEN '18-34'
+        WHEN DATEDIFF(YEAR, MEMBER_DOB, GETDATE()) BETWEEN 35 AND 49 THEN '35-49'
+        WHEN DATEDIFF(YEAR, MEMBER_DOB, GETDATE()) BETWEEN 50 AND 64 THEN '50-64'
         ELSE '65+'
     END
 ORDER BY
-    age_group;
+    AGE_GROUP;
 
---Total claim payment by date
+--TOTAL CLAIM PAYMENT BY DATE
 SELECT 
-    c.date_of_service AS payment_date,
-    SUM(p.net_payment) AS total_paid
+    C.DATE_OF_SERVICE AS PAYMENT_DATE,
+    SUM(P.NET_PAYMENT) AS TOTAL_PAID
 FROM 
-    HealthInsuranceClaimPayment p
+    HEALTHINSURANCECLAIMPAYMENT P
 JOIN 
-    HealthInsuranceClaim c ON p.claim_id = c.claim_id
+    HEALTHINSURANCECLAIM C ON P.CLAIM_ID = C.CLAIM_ID
 GROUP BY 
-    c.date_of_service
+    C.DATE_OF_SERVICE
 ORDER BY 
-    c.date_of_service;
+    C.DATE_OF_SERVICE;
 
---Total claim payment by status
+--TOTAL CLAIM PAYMENT BY STATUS
 SELECT 
-    s.claim_status,
-    SUM(p.net_payment) AS total_paid
+    S.CLAIM_STATUS,
+    SUM(P.NET_PAYMENT) AS TOTAL_PAID
 FROM 
-    HealthInsuranceClaimPayment p
+    HEALTHINSURANCECLAIMPAYMENT P
 JOIN 
-    HealthInsuranceClaim c ON p.claim_id = c.claim_id
+    HEALTHINSURANCECLAIM C ON P.CLAIM_ID = C.CLAIM_ID
 JOIN 
-    HealthInsuranceStatus s ON c.status_id = s.status_id
+    HEALTHINSURANCESTATUS S ON C.STATUS_ID = S.STATUS_ID
 GROUP BY 
-    s.claim_status
+    S.CLAIM_STATUS
 ORDER BY 
-    total_paid DESC;
+    TOTAL_PAID DESC;
 
---No of claims by county
+--NO OF CLAIMS BY COUNTY
 SELECT 
-    a.county,
-    COUNT(c.claim_id) AS total_claims
+    A.COUNTY,
+    COUNT(C.CLAIM_ID) AS TOTAL_CLAIMS
 FROM 
-    HealthInsuranceClaim c
+    HEALTHINSURANCECLAIM C
 JOIN 
-    HealthInsuranceMembers m ON c.claim_id = m.claim_id
+    HEALTHINSURANCEMEMBERS M ON C.CLAIM_ID = M.CLAIM_ID
 JOIN 
-    HealthInsuranceClaimAddress a ON m.address_id = a.address_id
+    HEALTHINSURANCECLAIMADDRESS A ON M.ADDRESS_ID = A.ADDRESS_ID
 GROUP BY 
-    a.county
+    A.COUNTY
 ORDER BY 
-    total_claims DESC;
+    TOTAL_CLAIMS DESC;
 
---Top number of claims by country
+--TOP NUMBER OF CLAIMS BY COUNTRY
 SELECT 
-    a.country,
-    COUNT(c.claim_id) AS Numberofclaims
+    A.COUNTRY,
+    COUNT(C.CLAIM_ID) AS NUMBEROFCLAIMS
 FROM 
-    HealthInsuranceClaim c
+    HEALTHINSURANCECLAIM C
 JOIN 
-    HealthInsuranceMembers m ON c.claim_id = m.claim_id
+    HEALTHINSURANCEMEMBERS M ON C.CLAIM_ID = M.CLAIM_ID
 JOIN 
-    HealthInsuranceClaimAddress a ON m.address_id = a.address_id
+    HEALTHINSURANCECLAIMADDRESS A ON M.ADDRESS_ID = A.ADDRESS_ID
 GROUP BY 
-    a.country
+    A.COUNTRY
 ORDER BY 
-    Numberofclaims DESC;
+    NUMBEROFCLAIMS DESC;
 
---Number of claims versus claim status by month
+--NUMBER OF CLAIMS VERSUS CLAIM STATUS BY MONTH
 SELECT 
-    Datename(month, c.date_of_service) AS claim_month,
-    s.claim_status,
-    COUNT(c.claim_id) AS total_claims
+    DATENAME(MONTH, C.DATE_OF_SERVICE) AS CLAIM_MONTH,
+    S.CLAIM_STATUS,
+    COUNT(C.CLAIM_ID) AS TOTAL_CLAIMS
 FROM 
-    HealthInsuranceClaim c
+    HEALTHINSURANCECLAIM C
 JOIN 
-    HealthInsuranceStatus s ON c.status_id = s.status_id
+    HEALTHINSURANCESTATUS S ON C.STATUS_ID = S.STATUS_ID
 GROUP BY 
-    datename(month, c.date_of_service), s.claim_status
+    DATENAME(MONTH, C.DATE_OF_SERVICE), S.CLAIM_STATUS
 ORDER BY 
-    claim_month, s.claim_status;
+    CLAIM_MONTH, S.CLAIM_STATUS;
 
---Trend of claims filled quarterly.
-SELECT datepart(QUARTER, date_of_service) AS Quarter, COUNT(*) AS total_claims
-FROM HealthInsuranceClaim
-GROUP BY datepart(QUARTER, date_of_service)
-ORDER BY Quarter;
+--TREND OF CLAIMS FILLED QUARTERLY.
+SELECT DATEPART(QUARTER, DATE_OF_SERVICE) AS QUARTER, COUNT(*) AS TOTAL_CLAIMS
+FROM HEALTHINSURANCECLAIM
+GROUP BY DATEPART(QUARTER, DATE_OF_SERVICE)
+ORDER BY QUARTER;
 
---Claim status categories
-SELECT s.claim_status, COUNT(*) AS total_claims
-FROM HealthInsuranceClaim c
-JOIN HealthInsuranceStatus s ON c.status_id = s.status_id
-GROUP BY s.claim_status
-;
---Claims paid versus unpaid
+--CLAIM STATUS CATEGORIES
 SELECT 
-    CASE WHEN p.claim_id IS NOT NULL THEN 'Paid' ELSE 'Unpaid' END AS payment_status,
-    COUNT(*) AS claim_count
-FROM HealthInsuranceClaim c
-LEFT JOIN HealthInsuranceClaimPayment p ON c.claim_id = p.claim_id
-GROUP BY CASE WHEN p.claim_id IS NOT NULL THEN 'Paid' ELSE 'Unpaid' END;
-
-
---High-Value Claims: Who are the top members whose approved claim amounts exceed $2200, and which providers are associated with them?SELECT 
-    m.member_first_name + ' ' + m.member_last_name AS member_name,
-    pr.provider_first_name + ' ' + pr.provider_last_name AS provider_name,
-    p.approved_amount
+    CASE 
+        WHEN S.CLAIM_STATUS IN ('DENY', 'PEND') THEN 'UNRESOLVED'
+        WHEN S.CLAIM_STATUS IN ('PAID') THEN 'APPROVED'
+        WHEN S.CLAIM_STATUS IN ('IN PROGRESS') THEN 'PROCESSING'
+        ELSE 'OTHER'
+    END AS CLAIM_STATUS_GROUP,
+    COUNT(*) AS TOTAL_CLAIMS
 FROM 
-    HealthInsuranceClaim c
+    HEALTHINSURANCECLAIM C
 JOIN 
-    HealthInsuranceStatus s ON c.status_id = s.status_id
+    HEALTHINSURANCESTATUS S ON C.STATUS_ID = S.STATUS_ID
+GROUP BY 
+    CASE 
+        WHEN S.CLAIM_STATUS IN ('DENY', 'PEND') THEN 'UNRESOLVED'
+        WHEN S.CLAIM_STATUS IN ('PAID') THEN 'APPROVED'
+        WHEN S.CLAIM_STATUS IN ('IN PROGRESS') THEN 'PROCESSING'
+        ELSE 'OTHER'
+    END
+ORDER BY 
+    TOTAL_CLAIMS DESC;
+
+--HIGH-VALUE CLAIMS: WHO ARE THE TOP MEMBERS WHOSE APPROVED CLAIM AMOUNTS EXCEED $2200, AND WHICH PROVIDERS ARE ASSOCIATED WITH THEM?
+SELECT 
+    M.MEMBER_FIRST_NAME + ' ' + M.MEMBER_LAST_NAME AS MEMBER_NAME,
+    PR.PROVIDER_FIRST_NAME + ' ' + PR.PROVIDER_LAST_NAME AS PROVIDER_NAME,
+    P.APPROVED_AMOUNT
+FROM 
+    HEALTHINSURANCECLAIM C
 JOIN 
-    HealthInsuranceClaimPayment p ON c.claim_id = p.claim_id
+    HEALTHINSURANCESTATUS S ON C.STATUS_ID = S.STATUS_ID
 JOIN 
-    HealthInsuranceMembers m ON c.claim_id = m.claim_id
+    HEALTHINSURANCECLAIMPAYMENT P ON C.CLAIM_ID = P.CLAIM_ID
 JOIN 
-    HealthInsuranceProvider pr ON c.claim_id = pr.claim_id
+    HEALTHINSURANCEMEMBERS M ON C.CLAIM_ID = M.CLAIM_ID
+JOIN 
+    HEALTHINSURANCEPROVIDER PR ON C.CLAIM_ID = PR.CLAIM_ID
 WHERE 
-   s.claim_status = 'paid' and p.approved_amount > 2500
+   S.CLAIM_STATUS = 'PAID' AND P.APPROVED_AMOUNT > 2500
 GROUP BY 
-    m.member_first_name, m.member_last_name,
-    pr.provider_first_name, pr.provider_last_name, 
-	p.approved_amount
+    M.MEMBER_FIRST_NAME, M.MEMBER_LAST_NAME,
+    PR.PROVIDER_FIRST_NAME, PR.PROVIDER_LAST_NAME, 
+	P.APPROVED_AMOUNT
 ORDER BY 
-    p.approved_amount DESC;
+    P.APPROVED_AMOUNT DESC;
 
---Claim Tracking: Which members currently have claims in progress, and what are their demographic profiles?
-SELECT m.member_first_name + ' ' + m.member_last_name AS member_name,s.claim_status,m.gender,m.member_dob
+--CLAIM TRACKING: WHICH MEMBERS CURRENTLY HAVE CLAIMS IN PROGRESS, AND WHAT ARE THEIR DEMOGRAPHIC PROFILES?
+CREATE VIEW VWALLCLAIMTRACKING AS
+SELECT S.CLAIM_STATUS,M.MEMBER_FIRST_NAME + ' ' + M.MEMBER_LAST_NAME AS MEMBER_NAME,M.GENDER,M.MEMBER_DOB
 FROM 
-    HealthInsuranceClaim c
+    HEALTHINSURANCECLAIM C
 JOIN 
-    HealthInsuranceStatus s ON c.status_id = s.status_id
+    HEALTHINSURANCESTATUS S ON C.STATUS_ID = S.STATUS_ID
 JOIN 
-    HealthInsuranceMembers m ON c.claim_id = m.claim_id
-WHERE 
-   s.claim_status = 'in progress'
+    HEALTHINSURANCEMEMBERS M ON C.CLAIM_ID = M.CLAIM_ID
+--WHERE 
+   --S.CLAIM_STATUS = 'IN PROGRESS'
 GROUP BY 
-m.member_first_name, m.member_last_name, s.claim_status, m.gender, m.member_dob
+S.CLAIM_STATUS, M.MEMBER_FIRST_NAME, M.MEMBER_LAST_NAME, M.GENDER, M.MEMBER_DOB
 
---Plan Distribution: Which members are subscribed to coverage plans that are linked to address IDs within a specified operational range?**/
+--PLAN DISTRIBUTION: WHICH MEMBERS ARE SUBSCRIBED TO COVERAGE PLANS THAT ARE LINKED TO ADDRESS IDS WITHIN A SPECIFIED OPERATIONAL RANGE?**/
 SELECT 
-    Distinct m.member_first_name + ' ' + m.member_last_name AS member_name,
-    c.coverage_name,
-    a.address_id,
-    a.county
+    DISTINCT M.MEMBER_FIRST_NAME + ' ' + M.MEMBER_LAST_NAME AS MEMBER_NAME,
+    C.COVERAGE_NAME,
+    A.ADDRESS_ID,
+    A.COUNTY
 FROM 
-    HealthInsuranceMembers m
+    HEALTHINSURANCEMEMBERS M
 JOIN 
-    HealthInsuranceCoverage c ON m.coverage_id = c.coverage_id
+    HEALTHINSURANCECOVERAGE C ON M.COVERAGE_ID = C.COVERAGE_ID
 JOIN 
-    HealthInsuranceClaimAddress a ON m.address_id = a.address_id
+    HEALTHINSURANCECLAIMADDRESS A ON M.ADDRESS_ID = A.ADDRESS_ID
 
 ORDER BY 
-a.county
+A.COUNTY
+
